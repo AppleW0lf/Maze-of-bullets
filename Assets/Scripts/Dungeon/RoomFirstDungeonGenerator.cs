@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -40,7 +41,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         {
             roomCenters.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
         }
-
+        GenerateObjectsInRooms(roomsList, floor);
         HashSet<Vector2Int> corridors = ConnectRooms(roomCenters);
         floor.UnionWith(corridors);
 
@@ -68,6 +69,36 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         return floor;
     }
 
+    private void GenerateObjectsInRooms(List<BoundsInt> roomsList, HashSet<Vector2Int> floor)
+    {
+        foreach (var room in roomsList)
+        {
+            // Получаем центр комнаты
+            Vector2Int roomCenter = new Vector2Int(Mathf.RoundToInt(room.center.x), Mathf.RoundToInt(room.center.y));
+
+            // Вычисляем границы комнаты для объектов
+            int roomWidth = room.size.x - offset * 2;
+            int roomHeight = room.size.y - offset * 2;
+            BoundsInt objectBounds = new BoundsInt(room.min + new Vector3Int(offset, offset, 0), new Vector3Int(roomWidth, roomHeight, 0));
+
+            // Генерация объектов в комнате
+            for (int i = 0; i < Random.Range(1, 4); i++) // Генерация от 1 до 3 объектов
+            {
+                // Генерируем случайную позицию в комнате
+                Vector2Int objectPosition = new Vector2Int(Random.Range(objectBounds.xMin, objectBounds.xMax), Random.Range(objectBounds.yMin, objectBounds.yMax));
+
+                // Проверяем, что позиция объекта находится на полу и не пересекается с другими объектами
+                if (floor.Contains(objectPosition))
+                {
+                    // Создаем объект (например, используйте tilemapVisualizer для размещения тайла)
+                    // ...
+                    tilemapVisualizer.PaintWeaponTile(objectPosition);  // Например, разместите тайл объекта
+                    // ...
+                }
+            }
+        }
+    }
+
     private HashSet<Vector2Int> ConnectRooms(List<Vector2Int> roomCenters)
     {
         HashSet<Vector2Int> corridors = new HashSet<Vector2Int>();
@@ -79,11 +110,26 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
             roomCenters.Remove(closest);
             HashSet<Vector2Int> newCorridor = CreateCorridor(currentRoomCenter, closest);
             currentRoomCenter = closest;
+            newCorridor = IncreaseCorridorBrush3by3(newCorridor.ToList()).ToHashSet(); // Преобразуйте в список, расширьте, затем обратно в HashSet
             corridors.UnionWith(newCorridor);
         }
         return corridors;
     }
-
+    private List<Vector2Int> IncreaseCorridorBrush3by3(List<Vector2Int> corridor)
+    {
+        List<Vector2Int> newCorridor = new List<Vector2Int>();
+        for (int i = 1; i < corridor.Count; i++)
+        {
+            for (int x = -1; x < 2; x++)
+            {
+                for (int y = -1; y < 2; y++)
+                {
+                    newCorridor.Add(corridor[i - 1] + new Vector2Int(x, y));
+                }
+            }
+        }
+        return newCorridor;
+    }
     private HashSet<Vector2Int> CreateCorridor(Vector2Int currentRoomCenter, Vector2Int destination)
     {
         HashSet<Vector2Int> corridor = new HashSet<Vector2Int>();
