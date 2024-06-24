@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -8,25 +6,26 @@ public class TilemapVisualizer : MonoBehaviour
 {
     [SerializeField]
     private Tilemap floorTilemap, wallTilemap, weaponTilemap;
+
     [SerializeField]
-    private TileBase floorTile, wallTop, weapon;
-    
+    private TileBase floorTile, wallTop;
 
     public void PaintFloorTiles(IEnumerable<Vector2Int> floorPositions)
     {
         PaintTiles(floorPositions, floorTilemap, floorTile);
     }
 
-    public void PaintWeaponTile(Vector2Int position)
+    /*public void PaintWeaponTile(Vector2Int position)
     {
         PaintSingleTile(weaponTilemap, weapon, position);
-    }
+    }*/
+
     private void PaintTiles(IEnumerable<Vector2Int> positions, Tilemap tilemap, TileBase tile)
     {
         foreach (var position in positions)
         {
-            PaintSingleTile(tilemap,tile,position);
-        }        
+            PaintSingleTile(tilemap, tile, position);
+        }
     }
 
     private void PaintSingleTile(Tilemap tilemap, TileBase tile, Vector2Int position)
@@ -34,6 +33,7 @@ public class TilemapVisualizer : MonoBehaviour
         var tilePosition = tilemap.WorldToCell((Vector3Int)position);
         tilemap.SetTile(tilePosition, tile);
     }
+
     public void Clear()
     {
         floorTilemap.ClearAllTiles();
@@ -42,6 +42,6 @@ public class TilemapVisualizer : MonoBehaviour
 
     internal void PaintSingleBasicWall(Vector2Int position)
     {
-        PaintSingleTile(wallTilemap,wallTop,position);
+        PaintSingleTile(wallTilemap, wallTop, position);
     }
 }

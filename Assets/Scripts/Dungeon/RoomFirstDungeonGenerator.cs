@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,11 +8,14 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
 {
     [SerializeField]
     private int minRoomWidth = 4, minRoomHeight = 4;
+
     [SerializeField]
     private int dungeonWidth = 20, dungeonHeight = 20;
+
     [SerializeField]
-    [Range(0,10)]
+    [Range(0, 10)]
     private int offset = 1;
+
     [SerializeField]
     private bool randomWalkRooms = false;
 
@@ -30,11 +32,11 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         if (randomWalkRooms)
         {
             floor = CreateRoomsRandomly(roomsList);
-        } else
+        }
+        else
         {
             floor = CreateSimpleRooms(roomsList);
         }
-        
 
         List<Vector2Int> roomCenters = new List<Vector2Int>();
         foreach (var room in roomsList)
@@ -46,7 +48,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         floor.UnionWith(corridors);
 
         tilemapVisualizer.PaintFloorTiles(floor);
-        WallGenerator.CreateWalls(floor,tilemapVisualizer);
+        WallGenerator.CreateWalls(floor, tilemapVisualizer);
     }
 
     private HashSet<Vector2Int> CreateRoomsRandomly(List<BoundsInt> roomsList)
@@ -55,7 +57,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         for (int i = 0; i < roomsList.Count; i++)
         {
             var roomBounds = roomsList[i];
-            var roomCenter = new Vector2Int(Mathf.RoundToInt(roomBounds.center.x),Mathf.RoundToInt(roomBounds.center.y));
+            var roomCenter = new Vector2Int(Mathf.RoundToInt(roomBounds.center.x), Mathf.RoundToInt(roomBounds.center.y));
             var roomFloor = RunRandomWalk(randowWalkParameters, roomCenter);
             foreach (var position in roomFloor)
             {
@@ -64,7 +66,6 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
                     floor.Add(position);
                 }
             }
-            
         }
         return floor;
     }
@@ -92,7 +93,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
                 {
                     // Создаем объект (например, используйте tilemapVisualizer для размещения тайла)
                     // ...
-                    tilemapVisualizer.PaintWeaponTile(objectPosition);  // Например, разместите тайл объекта
+                    // tilemapVisualizer.PaintWeaponTile(objectPosition);  // Например, разместите тайл объекта
                     // ...
                 }
             }
@@ -115,6 +116,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         }
         return corridors;
     }
+
     private List<Vector2Int> IncreaseCorridorBrush3by3(List<Vector2Int> corridor)
     {
         List<Vector2Int> newCorridor = new List<Vector2Int>();
@@ -130,6 +132,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
         }
         return newCorridor;
     }
+
     private HashSet<Vector2Int> CreateCorridor(Vector2Int currentRoomCenter, Vector2Int destination)
     {
         HashSet<Vector2Int> corridor = new HashSet<Vector2Int>();
@@ -175,7 +178,7 @@ public class RoomFirstDungeonGenerator : SimpleWalkMapGeneration
                 closest = position;
             }
         }
-        
+
         return closest;
     }
 
